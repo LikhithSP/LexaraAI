@@ -1,14 +1,22 @@
-# ChatGPT Clone with DeepSeek R1 API
+# Lexara AI - Modern AI Assistant
+<p align="center">
+  <img src=".\static\images\prev.png">
+  <b>A beautiful, modern web-based AI assistant that replicates the core user experience and interface of ChatGPT, powered by the DeepSeek R1 API via OpenRouter.</b><br><a href="https://lexara.vercel.app" target="_blank">Visit Now</a> <br>
 
-A web-based chatbot that replicates the core user experience and interface of ChatGPT, powered by the DeepSeek R1 API via OpenRouter.
+</p>
+
+
+
 
 ## Features
 
-- **Clean ChatGPT-like Interface**: Familiar chat interface with sidebar and main chat area
-- **Real-time Messaging**: Live chat with typing indicators
-- **Code Syntax Highlighting**: Proper formatting for code snippets using highlight.js
+- **Modern Aesthetic Design**: Clean, beautiful interface inspired by the latest AI chat applications
+- **Lexara AI Branding**: Unique identity with custom logo and gradient design
+- **Real-time Messaging**: Live chat with elegant typing indicators
+- **Quick Action Cards**: Fast access to common AI tasks
+- **Code Syntax Highlighting**: Beautiful formatting for code snippets using highlight.js
 - **Markdown Support**: Rich text rendering with marked.js
-- **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **Responsive Design**: Perfect on desktop, tablet, and mobile devices
 - **Conversation Context**: Maintains conversation history throughout the session
 
 ## Technology Stack

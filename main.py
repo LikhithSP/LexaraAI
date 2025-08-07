@@ -48,13 +48,13 @@ conversations: Dict[str, List[Message]] = {}
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
-    """Serve the main HTML page"""
+    """Serve the main HTML page for Lexara AI"""
     try:
         with open("static/index.html", "r", encoding="utf-8") as f:
             html_content = f.read()
         return HTMLResponse(content=html_content, status_code=200)
     except FileNotFoundError:
-        return HTMLResponse(content="<h1>ChatGPT Clone</h1><p>Frontend files not found</p>", status_code=404)
+        return HTMLResponse(content="<h1>Lexara AI</h1><p>Frontend files not found</p>", status_code=404)
 
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):

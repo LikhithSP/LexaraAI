@@ -1,4 +1,4 @@
-class ChatApp {
+class LexaraAI {
     constructor() {
         this.conversationHistory = [];
         this.isTyping = false;
@@ -6,6 +6,7 @@ class ChatApp {
         this.initializeElements();
         this.setupEventListeners();
         this.setupMarkdown();
+        this.setDynamicGreeting();
     }
 
     initializeElements() {
@@ -14,6 +15,10 @@ class ChatApp {
         this.chatMessages = document.getElementById('chatMessages');
         this.typingIndicator = document.getElementById('typingIndicator');
         this.newChatBtn = document.getElementById('newChatBtn');
+        this.welcomeSection = document.getElementById('welcomeSection');
+        this.quickActionCards = document.querySelectorAll('.quick-action-card');
+        this.themeToggle = document.getElementById('themeToggle');
+        this.dynamicGreeting = document.getElementById('dynamicGreeting');
     }
 
     setupEventListeners() {
@@ -37,8 +42,22 @@ class ChatApp {
         // New chat button
         this.newChatBtn.addEventListener('click', () => this.startNewChat());
 
+        // Quick action cards
+        this.quickActionCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const prompt = card.getAttribute('data-prompt');
+                this.handleQuickAction(prompt);
+            });
+        });
+
+        // Theme toggle
+        this.themeToggle.addEventListener('click', () => this.toggleTheme());
+
         // Initial button state
         this.toggleSendButton();
+        
+        // Initialize theme
+        this.initializeTheme();
     }
 
     setupMarkdown() {
@@ -69,9 +88,31 @@ class ChatApp {
         this.sendButton.disabled = !hasText || this.isTyping;
     }
 
+    handleQuickAction(prompt) {
+        this.messageInput.value = prompt;
+        this.autoResizeTextarea();
+        this.toggleSendButton();
+        this.messageInput.focus();
+    }
+
+    hideWelcomeSection() {
+        if (this.welcomeSection) {
+            this.welcomeSection.style.display = 'none';
+        }
+    }
+
+    showWelcomeSection() {
+        if (this.welcomeSection) {
+            this.welcomeSection.style.display = 'flex';
+        }
+    }
+
     async sendMessage() {
         const message = this.messageInput.value.trim();
         if (!message || this.isTyping) return;
+
+        // Hide welcome section on first message
+        this.hideWelcomeSection();
 
         // Add user message to UI
         this.addUserMessage(message);
@@ -151,8 +192,20 @@ class ChatApp {
         avatarDiv.className = 'message-avatar';
         
         const avatar = document.createElement('div');
-        avatar.className = `avatar ${role}-avatar`;
-        avatar.textContent = role === 'user' ? 'You' : 'AI';
+        if (role === 'user') {
+            avatar.className = 'avatar user-avatar';
+            avatar.innerHTML = `
+                <img src="https://em-content.zobj.net/source/microsoft-teams/400/bust-in-silhouette_1f464.png" alt="User Avatar" width="18" height="18" style="border-radius: 50%; object-fit: cover;">
+            `;
+        } else {
+            avatar.className = 'avatar lexara-avatar-small';
+            avatar.innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            `;
+        }
         
         avatarDiv.appendChild(avatar);
 
@@ -208,7 +261,8 @@ class ChatApp {
 
     scrollToBottom() {
         setTimeout(() => {
-            this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+            const container = this.chatMessages.parentElement;
+            container.scrollTop = container.scrollHeight;
         }, 100);
     }
 
@@ -216,12 +270,11 @@ class ChatApp {
         // Clear conversation history
         this.conversationHistory = [];
         
-        // Clear messages except welcome message
-        const welcomeMessage = this.chatMessages.querySelector('.message');
+        // Clear messages
         this.chatMessages.innerHTML = '';
-        if (welcomeMessage) {
-            this.chatMessages.appendChild(welcomeMessage);
-        }
+        
+        // Show welcome section
+        this.showWelcomeSection();
         
         // Clear input
         this.messageInput.value = '';
@@ -231,9 +284,99 @@ class ChatApp {
         // Focus input
         this.messageInput.focus();
     }
+
+    // Add smooth animations
+    addRippleEffect(element, event) {
+        const ripple = document.createElement('span');
+        const rect = element.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = event.clientX - rect.left - size / 2;
+        const y = event.clientY - rect.top - size / 2;
+        
+        ripple.style.cssText = `
+            position: absolute;
+            width: ${size}px;
+            height: ${size}px;
+            left: ${x}px;
+            top: ${y}px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        `;
+        
+        element.appendChild(ripple);
+        
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    }
+
+    // Theme Management Methods
+    initializeTheme() {
+        // Check for saved theme preference or default to 'light'
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        this.setTheme(savedTheme);
+    }
+
+    toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        this.setTheme(newTheme);
+    }
+
+    setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        
+        // Add a subtle animation class for smooth transition
+        document.body.classList.add('theme-transitioning');
+        setTimeout(() => {
+            document.body.classList.remove('theme-transitioning');
+        }, 300);
+    }
+
+    // Dynamic Greeting Based on Time
+    setDynamicGreeting() {
+        if (!this.dynamicGreeting) return;
+        
+        const now = new Date();
+        const hour = now.getHours();
+        let greeting = "Hello there!"; // fallback/default
+        
+        if (hour >= 5 && hour < 12) {
+            greeting = "Good morning! 👋";
+        } else if (hour >= 12 && hour < 17) {
+            greeting = "Good afternoon! ☀️";
+        } else if (hour >= 17 && hour < 22) {
+            greeting = "Good evening! 🌆";
+        } else if (hour >= 22 || hour < 5) {
+            greeting = "Hey there, night owl! 🌙";
+        }
+        
+        this.dynamicGreeting.textContent = greeting;
+    }
 }
+
+// Add ripple animation CSS
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+    
+    .quick-action-card, .new-chat-btn button, #sendButton {
+        position: relative;
+        overflow: hidden;
+    }
+`;
+document.head.appendChild(style);
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new ChatApp();
+    new LexaraAI();
 });
