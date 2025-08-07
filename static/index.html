@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Clone - Powered by DeepSeek R1</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>ChatGPT Clone</h2>
+                <p class="powered-by">Powered by DeepSeek R1</p>
+            </div>
+            <div class="new-chat-btn">
+                <button id="newChatBtn">+ New Chat</button>
+            </div>
+            <div class="conversation-history">
+                <!-- Placeholder for conversation history -->
+                <div class="history-placeholder">
+                    <p>Conversation history will appear here in future updates</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="main-content">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h1>ChatGPT Clone</h1>
+                    <p>How can I help you today?</p>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Welcome message -->
+                    <div class="message assistant-message">
+                        <div class="message-avatar">
+                            <div class="avatar assistant-avatar">AI</div>
+                        </div>
+                        <div class="message-content">
+                            <p>Hello! I'm your AI assistant powered by DeepSeek R1. How can I help you today?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                    <div class="message assistant-message">
+                        <div class="message-avatar">
+                            <div class="avatar assistant-avatar">AI</div>
+                        </div>
+                        <div class="message-content">
+                            <div class="typing-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="Message ChatGPT Clone..." 
+                        rows="1"
+                        maxlength="4000"
+                    ></textarea>
+                    <button id="sendButton" disabled>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="m12 2 3 20L9 13l11-1L2 12l10-10z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="input-footer">
+                    <p>ChatGPT Clone can make mistakes. Consider checking important information.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

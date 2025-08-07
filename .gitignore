@@ -1,0 +1,14 @@
+# .gitignore for MyGPT
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env.*
+# Node modules (if any JS tooling is added)
+node_modules/
+# OS files
+.DS_Store
+Thumbs.db
+# VSCode settings
+.vscode/
