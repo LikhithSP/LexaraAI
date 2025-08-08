@@ -2,11 +2,13 @@ class LexaraAI {
     constructor() {
         this.conversationHistory = [];
         this.isTyping = false;
+        this.currentChatId = null;
         
         this.initializeElements();
         this.setupEventListeners();
         this.setupMarkdown();
         this.setDynamicGreeting();
+        this.loadChatHistoryFromStorage();
     }
 
     initializeElements() {
@@ -19,6 +21,53 @@ class LexaraAI {
         this.quickActionCards = document.querySelectorAll('.quick-action-card');
         this.themeToggle = document.getElementById('themeToggle');
         this.dynamicGreeting = document.getElementById('dynamicGreeting');
+        this.shareChatBtn = document.getElementById('shareChatBtn');
+        this.conversationHistoryContainer = document.getElementById('conversationHistory');
+        this.sidebar = document.querySelector('.sidebar');
+        this.setupMobileMenu();
+    }
+
+    setupMobileMenu() {
+        // Create mobile menu overlay
+        this.mobileOverlay = document.createElement('div');
+        this.mobileOverlay.className = 'sidebar-overlay';
+        document.body.appendChild(this.mobileOverlay);
+
+        // Mobile menu toggle functionality
+        const chatHeaderBar = document.querySelector('.chat-header-bar');
+        if (chatHeaderBar) {
+            chatHeaderBar.addEventListener('click', (e) => {
+                if (window.innerWidth <= 480 && e.target === chatHeaderBar) {
+                    this.toggleMobileSidebar();
+                }
+            });
+        }
+
+        // Close sidebar when clicking overlay
+        this.mobileOverlay.addEventListener('click', () => {
+            this.closeMobileSidebar();
+        });
+
+        // Close sidebar when window is resized to larger screen
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 480) {
+                this.closeMobileSidebar();
+            }
+        });
+    }
+
+    toggleMobileSidebar() {
+        if (this.sidebar && this.mobileOverlay) {
+            this.sidebar.classList.toggle('mobile-open');
+            this.mobileOverlay.classList.toggle('active');
+        }
+    }
+
+    closeMobileSidebar() {
+        if (this.sidebar && this.mobileOverlay) {
+            this.sidebar.classList.remove('mobile-open');
+            this.mobileOverlay.classList.remove('active');
+        }
     }
 
     setupEventListeners() {
@@ -52,6 +101,9 @@ class LexaraAI {
 
         // Theme toggle
         this.themeToggle.addEventListener('click', () => this.toggleTheme());
+
+        // Share chat button
+        this.shareChatBtn.addEventListener('click', () => this.copyChatToClipboard());
 
         // Initial button state
         this.toggleSendButton();
@@ -93,6 +145,7 @@ class LexaraAI {
         this.autoResizeTextarea();
         this.toggleSendButton();
         this.messageInput.focus();
+        this.saveCurrentChat();
     }
 
     hideWelcomeSection() {
@@ -110,6 +163,10 @@ class LexaraAI {
     async sendMessage() {
         const message = this.messageInput.value.trim();
         if (!message || this.isTyping) return;
+
+        if (!this.currentChatId) {
+            this.startNewChat(false); // Don't clear messages if it's the first message of a new session
+        }
 
         // Hide welcome section on first message
         this.hideWelcomeSection();
@@ -137,6 +194,7 @@ class LexaraAI {
             
             // Update conversation history
             this.conversationHistory = response.conversation_history;
+            this.saveCurrentChat();
             
         } catch (error) {
             this.hideTypingIndicator();
@@ -266,25 +324,6 @@ class LexaraAI {
         }, 100);
     }
 
-    startNewChat() {
-        // Clear conversation history
-        this.conversationHistory = [];
-        
-        // Clear messages
-        this.chatMessages.innerHTML = '';
-        
-        // Show welcome section
-        this.showWelcomeSection();
-        
-        // Clear input
-        this.messageInput.value = '';
-        this.autoResizeTextarea();
-        this.toggleSendButton();
-        
-        // Focus input
-        this.messageInput.focus();
-    }
-
     // Add smooth animations
     addRippleEffect(element, event) {
         const ripple = document.createElement('span');
@@ -356,6 +395,238 @@ class LexaraAI {
         }
         
         this.dynamicGreeting.textContent = greeting;
+    }
+
+    copyChatToClipboard() {
+        if (this.conversationHistory.length === 0) {
+            this.showTemporaryTooltip(this.shareChatBtn, 'Nothing to copy!');
+            return;
+        }
+
+        let chatText = "Lexara AI Conversation\n";
+        chatText += "========================\n\n";
+
+        this.conversationHistory.forEach(item => {
+            const prefix = item.role === 'user' ? 'You: ' : 'Lexara AI: ';
+            chatText += prefix + item.content + '\n\n';
+        });
+
+        navigator.clipboard.writeText(chatText.trim()).then(() => {
+            this.showTemporaryTooltip(this.shareChatBtn, 'Copied!');
+        }).catch(err => {
+            console.error('Failed to copy chat: ', err);
+            this.showTemporaryTooltip(this.shareChatBtn, 'Failed to copy!');
+        });
+    }
+
+    showTemporaryTooltip(element, text) {
+        const originalTitle = element.getAttribute('title');
+        element.setAttribute('title', text);
+
+        const icon = element.querySelector('svg');
+        if (!icon) return;
+        
+        const originalIconHTML = icon.innerHTML;
+        // Checkmark icon
+        icon.innerHTML = `<path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+        element.style.borderColor = '#34d399'; // Green border for success
+        element.style.color = '#34d399';
+
+        setTimeout(() => {
+            element.setAttribute('title', originalTitle);
+            icon.innerHTML = originalIconHTML;
+            element.style.borderColor = '';
+            element.style.color = '';
+        }, 2000);
+    }
+
+    // Local Storage Chat History Management
+    saveCurrentChat() {
+        if (!this.currentChatId || this.conversationHistory.length === 0) return;
+
+        const allChats = this.getAllChatsFromStorage();
+        const chatData = {
+            id: this.currentChatId,
+            timestamp: new Date().toISOString(),
+            messages: this.conversationHistory
+        };
+        
+        const existingChatIndex = allChats.findIndex(chat => chat.id === this.currentChatId);
+        if (existingChatIndex > -1) {
+            allChats[existingChatIndex] = chatData;
+        } else {
+            allChats.unshift(chatData);
+        }
+
+        localStorage.setItem('lexara-chats', JSON.stringify(allChats));
+        this.renderChatHistoryList();
+    }
+
+    loadChatHistoryFromStorage() {
+        this.renderChatHistoryList();
+        const allChats = this.getAllChatsFromStorage();
+        if (allChats.length > 0) {
+            this.loadChat(allChats[0].id);
+        } else {
+            this.startNewChat(false);
+        }
+    }
+
+    getAllChatsFromStorage() {
+        try {
+            const chats = localStorage.getItem('lexara-chats');
+            return chats ? JSON.parse(chats) : [];
+        } catch (e) {
+            console.error("Error parsing chats from localStorage", e);
+            return [];
+        }
+    }
+
+    renderChatHistoryList() {
+        if (!this.conversationHistoryContainer) return;
+
+        const allChats = this.getAllChatsFromStorage();
+        this.conversationHistoryContainer.innerHTML = '';
+
+        if (allChats.length === 0) {
+            this.conversationHistoryContainer.innerHTML = `
+                <div class="history-placeholder">
+                    <div class="chat-history-item">
+                        <div class="chat-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span>No recent chats</span>
+                    </div>
+                </div>`;
+            return;
+        }
+
+        const groupedChats = this.groupChatsByTime(allChats);
+
+        for (const group in groupedChats) {
+            const section = document.createElement('div');
+            section.className = 'history-section';
+            
+            const title = document.createElement('h3');
+            title.textContent = group;
+            section.appendChild(title);
+
+            groupedChats[group].forEach(chat => {
+                const item = document.createElement('div');
+                item.className = `chat-history-item ${chat.id === this.currentChatId ? 'active' : ''}`;
+                item.dataset.chatId = chat.id;
+                
+                const icon = document.createElement('div');
+                icon.className = 'chat-icon';
+                icon.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+                
+                const span = document.createElement('span');
+                span.textContent = this.getChatTitle(chat.messages);
+
+                item.appendChild(icon);
+                item.appendChild(span);
+                
+                item.addEventListener('click', () => this.loadChat(chat.id));
+                section.appendChild(item);
+            });
+            
+            this.conversationHistoryContainer.appendChild(section);
+        }
+    }
+
+    groupChatsByTime(chats) {
+        const groups = {
+            'Today': [],
+            'Yesterday': [],
+            'Previous 7 Days': [],
+            'Previous 30 Days': [],
+            'Older': []
+        };
+
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const thirtyDaysAgo = new Date(today);
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        chats.forEach(chat => {
+            const chatDate = new Date(chat.timestamp);
+            if (chatDate >= today) {
+                groups['Today'].push(chat);
+            } else if (chatDate >= yesterday) {
+                groups['Yesterday'].push(chat);
+            } else if (chatDate >= sevenDaysAgo) {
+                groups['Previous 7 Days'].push(chat);
+            } else if (chatDate >= thirtyDaysAgo) {
+                groups['Previous 30 Days'].push(chat);
+            } else {
+                groups['Older'].push(chat);
+            }
+        });
+
+        // Clean up empty groups
+        for (const group in groups) {
+            if (groups[group].length === 0) {
+                delete groups[group];
+            }
+        }
+
+        return groups;
+    }
+
+    getChatTitle(messages) {
+        if (messages.length > 0 && messages[0].role === 'user') {
+            return messages[0].content.substring(0, 30) + (messages[0].content.length > 30 ? '...' : '');
+        }
+        return 'New Chat';
+    }
+
+    loadChat(chatId) {
+        const allChats = this.getAllChatsFromStorage();
+        const chat = allChats.find(c => c.id === chatId);
+
+        if (chat) {
+            this.currentChatId = chatId;
+            this.conversationHistory = chat.messages;
+            this.chatMessages.innerHTML = '';
+            
+            if (this.conversationHistory.length > 0) {
+                this.hideWelcomeSection();
+                this.conversationHistory.forEach(item => {
+                    const messageElement = this.createMessageElement(item.role, item.content);
+                    this.chatMessages.appendChild(messageElement);
+                });
+                this.scrollToBottom();
+            } else {
+                if (this.welcomeSection) {
+                    this.welcomeSection.style.display = 'flex';
+                }
+            }
+            this.renderChatHistoryList();
+            this.closeMobileSidebar(); // Close mobile sidebar when chat is loaded
+        }
+    }
+
+    startNewChat(clearMessages = true) {
+        this.currentChatId = `chat-${new Date().getTime()}`;
+        this.conversationHistory = [];
+        if (clearMessages) {
+            this.chatMessages.innerHTML = '';
+        }
+        if (this.welcomeSection) {
+            this.welcomeSection.style.display = 'flex';
+        }
+        this.messageInput.value = '';
+        this.autoResizeTextarea();
+        this.toggleSendButton();
+        this.renderChatHistoryList();
+        this.closeMobileSidebar(); // Close mobile sidebar when new chat is started
     }
 }
 

@@ -13,11 +13,14 @@
 - **Modern Aesthetic Design**: Clean, beautiful interface inspired by the latest AI chat applications
 - **Lexara AI Branding**: Unique identity with custom logo and gradient design
 - **Real-time Messaging**: Live chat with elegant typing indicators
-- **Quick Action Cards**: Fast access to common AI tasks
+- **Quick Action Cards**: Fast access to common AI tasks (with modern Fluent design)
 - **Code Syntax Highlighting**: Beautiful formatting for code snippets using highlight.js
 - **Markdown Support**: Rich text rendering with marked.js
-- **Responsive Design**: Perfect on desktop, tablet, and mobile devices
-- **Conversation Context**: Maintains conversation history throughout the session
+- **Responsive & Mobile-First Design**: Fully optimized for desktop, tablet, and mobile (with mobile drawer navigation, touch-friendly controls, and a mobile-optimized theme toggle)
+- **Persistent Chat History**: All your chats are saved in your browser's local storage, so you can revisit previous conversations even after a reload
+- **Clipboard Sharing**: One-click button to copy your entire conversation to the clipboard
+- **Refined Theme Toggle**: Modern, touch-friendly dark/light mode toggle with smooth transitions and custom SVG icons
+- **Conversation Context**: Maintains conversation history throughout the session and across reloads
 
 ## Technology Stack
 
@@ -63,15 +66,17 @@
 ## Project Structure
 
 ```
-chatgpt-clone/
+lexara-ai/
 ├── main.py                 # FastAPI backend server
 ├── requirements.txt        # Python dependencies
 ├── .env                   # Environment variables (API key)
 ├── README.md              # This file
+├── run.bat                # Windows batch file for quick start
+├── setup_and_run.py       # Python setup helper
 └── static/                # Frontend files
-    ├── index.html         # Main HTML page
-    ├── styles.css         # CSS styling
-    └── script.js          # JavaScript functionality
+   ├── index.html         # Main HTML page
+   ├── styles.css         # CSS styling (including mobile and dark mode)
+   └── script.js          # JavaScript (UI logic, chat, local storage, sharing)
 ```
 
 ## API Endpoints
@@ -96,11 +101,11 @@ The chatbot can display code snippets with proper syntax highlighting. Just ask 
 ### Conversation Memory
 The bot maintains context throughout your conversation, so you can refer to previous messages and build upon the discussion.
 
-### Responsive Design
-The interface adapts to different screen sizes:
-- Desktop: Full sidebar and chat interface
-- Tablet: Adjusts layout for medium screens
-- Mobile: Optimized for small screens with hidden sidebar
+### Responsive & Mobile Design
+The interface adapts to all screen sizes:
+- **Desktop**: Full sidebar and chat interface
+- **Tablet**: Adjusts layout for medium screens
+- **Mobile**: Optimized for small screens with a slide-out sidebar, large touch targets, and a mobile-friendly theme toggle
 
 ## Customization
 
@@ -112,9 +117,12 @@ Modify `static/styles.css` to change the appearance:
 
 ### Functionality
 Extend `static/script.js` to add new features:
-- Message persistence
-- Export conversations
+- Local storage chat history (see `saveCurrentChat`, `loadChatHistoryFromStorage`)
+- Clipboard sharing (see `copyChatToClipboard`)
 - Custom commands
+## Data & Privacy
+
+- All chat history is stored **only in your browser** (local storage). No data is sent anywhere except to the AI API for responses.
 
 ### Backend
 Enhance `main.py` for additional functionality:
