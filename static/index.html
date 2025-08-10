@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lexara AI - Intelligent Assistant</title>
+    <!-- Favicon: Lexara AI Logo -->
+    <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"%3E%3Ccircle cx="12" cy="12" r="4" stroke="%23764ba2" stroke-width="2"/%3E%3Cpath d="M12 2v20M2 12h20" stroke="%23764ba2" stroke-width="2"/%3E%3Cpath d="M6.34 6.34l11.32 11.32M17.66 6.34L6.34 17.66" stroke="%23764ba2" stroke-width="1"/%3E%3C/svg%3E'>
     <link rel="stylesheet" href="/static/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -45,7 +47,7 @@
             <div class="sidebar-footer">
                 <div class="user-profile">
                     <div class="avatar-small">
-                        <img src="https://img.lovepik.com/png/20231128/3d-illustration-avatar-profile-man-collection-guy-cheerful_716220_wh860.png" alt="User Avatar" width="32" height="32" style="border-radius: 50%; object-fit: cover;">
+                        <img src="https://banner2.cleanpng.com/cb4/uyq/zpj/a0ahqnln2.webp" alt="User Avatar" width="52" height="52" style="border-radius: 50%; object-fit: cover;">
                     </div>
                     <span>Guest User</span>
                     <button class="settings-btn" title="Settings">
@@ -101,24 +103,34 @@
                             </div>
                         </div>
                         <h1 id="dynamicGreeting">Hello there!</h1>
-                        <p>I'm Lexara, your intelligent assistant.</p>
-                           <div style="color: #a19d9d; font-size: 27px; font-family: Arial, sans-serif; font-weight: 700;">How can I help you today?</div>
+                        <p>I'm Lexara, your intelligent assistant. How can I help you today ?</p>
+                          
                         <br>
-                        
+                        <br>
                         <div class="quick-actions">
-                            
-                            <div class="quick-action-card" data-prompt="Explain a complex topic">
-                                <div class="action-icon"><img src="https://em-content.zobj.net/source/microsoft-teams/400/brain_1f9e0.png" alt="Brain Icon" height="42px; width: 42px;"/></div>
-                                <span>Explain Topic</span>
-                            </div>
-                            <div class="quick-action-card" data-prompt="Help me code">
-                                <div class="action-icon"><img src="https://em-content.zobj.net/source/microsoft-teams/400/technologist_1f9d1-200d-1f4bb.png" alt="Laptop Icon" height="42px; width: 42px;"/></div>
-                                <span>Code Help</span>
-                            </div>
-                            <div class="quick-action-card" data-prompt="Creative writing">
-                                <div class="action-icon"><img src="https://em-content.zobj.net/source/animated-noto-color-emoji/427/writing-hand_light-skin-tone_270d-1f3fb_1f3fb.gif" alt="Writing Hand Icon" height="42px; width: 42px;"/></div>
-                                <span>Creative Writing</span>
-                            </div>
+                           <button class="quick-action-btn" data-prompt="Summarize text">
+                                <i data-feather="file-text"></i>
+                                <span>Summarize text</span>
+                            </button>
+                            <button class="quick-action-btn" data-prompt="Get advice">
+                                <i data-feather="award"></i>
+                                <span>Get advice</span>
+                            </button>
+                            <button class="quick-action-btn" data-prompt="Surprise me">
+                                <i data-feather="gift"></i>
+                                <span>Surprise me</span>
+                            </button>
+                            <button class="quick-action-btn" data-prompt="Analyze data">
+                                <i data-feather="bar-chart-2"></i>
+                                <span>Analyze data</span>
+                            </button>
+                            <button class="quick-action-btn" data-prompt="Help me write">
+                                <i data-feather="edit-3"></i>
+                                <span>Help me write</span>
+                            </button>
+                            <button class="quick-action-btn" data-prompt="More">
+                                <span>More</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -174,5 +186,9 @@
     </div>
 
     <script src="/static/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script>
+        feather.replace();
+    </script>
 </body>
 </html>

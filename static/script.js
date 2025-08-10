@@ -18,7 +18,8 @@ class LexaraAI {
         this.typingIndicator = document.getElementById('typingIndicator');
         this.newChatBtn = document.getElementById('newChatBtn');
         this.welcomeSection = document.getElementById('welcomeSection');
-        this.quickActionCards = document.querySelectorAll('.quick-action-card');
+    this.quickActionCards = document.querySelectorAll('.quick-action-card');
+    this.quickActionBtns = document.querySelectorAll('.quick-action-btn');
         this.themeToggle = document.getElementById('themeToggle');
         this.dynamicGreeting = document.getElementById('dynamicGreeting');
         this.shareChatBtn = document.getElementById('shareChatBtn');
@@ -91,11 +92,31 @@ class LexaraAI {
         // New chat button
         this.newChatBtn.addEventListener('click', () => this.startNewChat());
 
-        // Quick action cards
+
+        // Quick action cards (legacy)
         this.quickActionCards.forEach(card => {
             card.addEventListener('click', () => {
                 const prompt = card.getAttribute('data-prompt');
                 this.handleQuickAction(prompt);
+            });
+        });
+
+        // Quick action buttons (new)
+        const quickActionPrompts = {
+            'Summarize text': 'Summarize this text: ',
+            'Get advice': 'I need advice about ',
+            'Surprise me': 'Surprise me with something interesting',
+            'Analyze data': 'Help me analyze this data: ',
+            'Help me write': 'Help me write ',
+            'More': 'Explain : '
+        };
+        this.quickActionBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const key = btn.getAttribute('data-prompt');
+                const prompt = quickActionPrompts[key] || '';
+                if (prompt) {
+                    this.handleQuickAction(prompt);
+                }
             });
         });
 
