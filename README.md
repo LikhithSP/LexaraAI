@@ -2,7 +2,7 @@
 <p align="center">
   <img src=".\static\images\prev.png">
   <img src=".\static\images\prev1.png">
-  <b>A beautiful, modern web-based AI assistant that replicates the core user experience and interface of ChatGPT, powered by the DeepSeek R1 API via OpenRouter.</b><br><a href="https://lexara.vercel.app" target="_blank">Visit Now</a> <br>
+  <b>A beautiful, modern web-based AI assistant that replicates the core user experience and interface of ChatGPT, powered by the DeepSeek R1 API via OpenRouter.</b><br><a href="https://lexaraai-549089623ce0.herokuapp.com/" target="_blank">Visit Now</a> <br>
 
 </p>
 
@@ -63,6 +63,7 @@
    ```
    http://localhost:8000
    ```
+6. Deployed using Heroku 
 
 ## Project Structure
 
