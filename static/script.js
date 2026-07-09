@@ -486,12 +486,7 @@ class LexaraAI {
 
     loadChatHistoryFromStorage() {
         this.renderChatHistoryList();
-        const allChats = this.getAllChatsFromStorage();
-        if (allChats.length > 0) {
-            this.loadChat(allChats[0].id);
-        } else {
-            this.startNewChat(false);
-        }
+        this.startNewChat(true);
     }
 
     getAllChatsFromStorage() {
