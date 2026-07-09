@@ -1,5 +1,5 @@
 @echo off
-echo Starting ChatGPT Clone with DeepSeek API...
+echo Starting MyGPT Clone with Gemini API...
 echo.
 
 REM Check if Python is installed
@@ -27,15 +27,14 @@ if errorlevel 1 (
 REM Check if .env file exists and has API key
 if not exist ".env" (
     echo Error: .env file not found
-    echo Please create a .env file with your DeepSeek API key
+    echo Please create a .env file with your Gemini API key
     pause
     exit /b 1
 )
 
-findstr /c:"your_deepseek_api_key_here" .env >nul
-if not errorlevel 1 (
-    echo Warning: Please update your DeepSeek API key in the .env file
-    echo Current key is still the placeholder value
+findstr /c:"GEMINI_API_KEY" .env >nul
+if errorlevel 1 (
+    echo Warning: Please configure your GEMINI_API_KEY in the .env file
     pause
 )
 

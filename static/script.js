@@ -540,17 +540,46 @@ class LexaraAI {
                 item.className = `chat-history-item ${chat.id === this.currentChatId ? 'active' : ''}`;
                 item.dataset.chatId = chat.id;
                 
+                const leftContent = document.createElement('div');
+                leftContent.className = 'chat-history-item-left';
+                leftContent.style.display = 'flex';
+                leftContent.style.alignItems = 'center';
+                leftContent.style.gap = '12px';
+                leftContent.style.flex = '1';
+                leftContent.style.minWidth = '0';
+                
                 const icon = document.createElement('div');
                 icon.className = 'chat-icon';
                 icon.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
                 
                 const span = document.createElement('span');
                 span.textContent = this.getChatTitle(chat.messages);
+                span.style.overflow = 'hidden';
+                span.style.textOverflow = 'ellipsis';
+                span.style.whiteSpace = 'nowrap';
 
-                item.appendChild(icon);
-                item.appendChild(span);
+                leftContent.appendChild(icon);
+                leftContent.appendChild(span);
                 
-                item.addEventListener('click', () => this.loadChat(chat.id));
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'chat-delete-btn';
+                deleteBtn.innerHTML = `
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                `;
+                deleteBtn.setAttribute('title', 'Delete chat');
+                
+                item.appendChild(leftContent);
+                item.appendChild(deleteBtn);
+                
+                leftContent.addEventListener('click', () => this.loadChat(chat.id));
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.deleteChat(chat.id);
+                });
+                
                 section.appendChild(item);
             });
             
@@ -631,6 +660,24 @@ class LexaraAI {
             }
             this.renderChatHistoryList();
             this.closeMobileSidebar(); // Close mobile sidebar when chat is loaded
+        }
+    }
+
+    deleteChat(chatId) {
+        if (!confirm('Are you sure you want to delete this conversation?')) return;
+        
+        let allChats = this.getAllChatsFromStorage();
+        allChats = allChats.filter(chat => chat.id !== chatId);
+        localStorage.setItem('lexara-chats', JSON.stringify(allChats));
+        
+        if (this.currentChatId === chatId) {
+            if (allChats.length > 0) {
+                this.loadChat(allChats[0].id);
+            } else {
+                this.startNewChat(true);
+            }
+        } else {
+            this.renderChatHistoryList();
         }
     }
 

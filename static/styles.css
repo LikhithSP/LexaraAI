@@ -219,6 +219,7 @@ body::before {
 .chat-history-item {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 12px;
     padding: 10px 12px;
     border-radius: var(--border-radius-sm);
@@ -230,6 +231,37 @@ body::before {
 .chat-history-item:hover {
     background: var(--secondary-bg);
     box-shadow: var(--shadow-sm);
+}
+
+.chat-delete-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+.chat-history-item:hover .chat-delete-btn {
+    opacity: 1;
+}
+
+.chat-delete-btn:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.chat-history-item.active .chat-delete-btn {
+    opacity: 0.7;
+}
+
+.chat-history-item.active .chat-delete-btn:hover {
+    opacity: 1;
 }
 
 .chat-icon {
@@ -664,6 +696,96 @@ body::before {
     margin-bottom: 0;
 }
 
+/* Typography & Markdown styling inside message-content */
+.message-content h1,
+.message-content h2,
+.message-content h3,
+.message-content h4,
+.message-content h5,
+.message-content h6 {
+    color: var(--text-primary);
+    font-weight: 600;
+    line-height: 1.3;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.message-content h1 { font-size: 1.6rem; }
+.message-content h2 { font-size: 1.35rem; }
+.message-content h3 { font-size: 1.15rem; }
+.message-content h4 { font-size: 1rem; }
+
+.message-content ul,
+.message-content ol {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+
+.message-content li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.message-content li p {
+    margin-bottom: 0.25rem;
+}
+
+.message-content li:last-child {
+    margin-bottom: 0;
+}
+
+.message-content hr {
+    border: 0;
+    border-top: 1px solid var(--border-color);
+    margin: 1.5rem 0;
+    opacity: 0.8;
+}
+
+.message-content blockquote {
+    border-left: 4px solid var(--accent-color);
+    padding: 0.5rem 1rem;
+    background: var(--secondary-bg);
+    margin: 1rem 0;
+    border-radius: 4px;
+    color: var(--text-secondary);
+}
+
+.message-content a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.message-content a:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
+.message-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1.2rem 0;
+    font-size: 13.5px;
+}
+
+.message-content th,
+.message-content td {
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.message-content th {
+    background: var(--secondary-bg);
+    font-weight: 600;
+}
+
+.message-content tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+
 /* Code Blocks */
 .message-content pre {
     background: #1a1b26;
@@ -840,6 +962,10 @@ body::before {
 }
 
 @media (max-width: 768px) {
+    .chat-delete-btn {
+        opacity: 0.7;
+    }
+    
     .app-container {
         flex-direction: column;
         height: 100vh;

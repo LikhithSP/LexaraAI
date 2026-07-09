@@ -17,13 +17,10 @@ app = FastAPI()
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Configure OpenAI client for DeepSeek via OpenRouter
-api_key = os.getenv("DEEPSEEK_API_KEY")
-base_url = os.getenv("DEEPSEEK_API_URL", "https://openrouter.ai/api/v1")
-
-# Extract base URL without the endpoint path
-if "/chat/completions" in base_url:
-    base_url = base_url.replace("/chat/completions", "")
+# Configure OpenAI client for Gemini API
+api_key = os.getenv("GEMINI_API_KEY")
+base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"
+gemini_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
 client = openai.OpenAI(
     api_key=api_key,
@@ -58,7 +55,7 @@ async def read_root():
 
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
-    """Handle chat requests and interact with DeepSeek API"""
+    """Handle chat requests and interact with Gemini API"""
     try:
         # Build conversation history
         conversation_history = request.conversation_history.copy()
@@ -67,12 +64,20 @@ async def chat_endpoint(request: ChatRequest):
         user_message = Message(role="user", content=request.message)
         conversation_history.append(user_message)
         
-        # Prepare messages for DeepSeek API
-        messages = [{"role": msg.role, "content": msg.content} for msg in conversation_history]
+        # Prepare messages for Gemini API, injecting a system instruction to handle recent cutoff queries
+        system_instruction = (
+            "You are Lexara AI, a helpful assistant. Your knowledge cutoff is early 2025. "
+            "If the user asks about events, sports results, or developments after this period "
+            "(such as IPL 2026 or other future events), gently explain that your training data "
+            "does not cover these recent events and suggest where they might find real-time information."
+        )
         
-        # Call DeepSeek API via OpenRouter
+        messages = [{"role": "system", "content": system_instruction}]
+        messages.extend([{"role": msg.role, "content": msg.content} for msg in conversation_history])
+        
+        # Call Gemini API
         response = client.chat.completions.create(
-            model="deepseek/deepseek-r1",
+            model=gemini_model,
             messages=messages,
             max_tokens=2000,
             temperature=0.7

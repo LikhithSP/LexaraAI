@@ -36,24 +36,24 @@ def setup_env_file():
     if env_file.exists():
         with open(env_file, 'r') as f:
             content = f.read()
-            if "your_deepseek_api_key_here" not in content:
+            if "GEMINI_API_KEY" in content:
                 print("✅ .env file already configured")
                 return True
     
-    print("\n🔑 OpenRouter API Key Setup")
-    print("You need an OpenRouter API key with DeepSeek R1 access to use this application.")
-    print("Get one from: https://openrouter.ai/")
+    print("\n🔑 Gemini API Key Setup")
+    print("You need a Gemini API key to use this application.")
+    print("Get one from: https://aistudio.google.com/")
     print()
     
-    api_key = input("Enter your OpenRouter API key (or press Enter to use demo mode): ").strip()
+    api_key = input("Enter your Gemini API key (or press Enter to use demo mode): ").strip()
     
     if not api_key:
         api_key = "demo_key_placeholder"
         print("⚠️  Demo mode: Some features may not work without a valid API key")
     
     with open(env_file, 'w') as f:
-        f.write(f"DEEPSEEK_API_KEY={api_key}\n")
-        f.write(f"DEEPSEEK_API_URL=https://openrouter.ai/api/v1/chat/completions\n")
+        f.write(f"GEMINI_API_KEY={api_key}\n")
+        f.write(f"GEMINI_MODEL=gemini-2.5-flash\n")
     
     print("✅ .env file created")
     return True
@@ -80,7 +80,7 @@ def start_server():
 
 def main():
     """Main setup and run function"""
-    print("🤖 ChatGPT Clone with DeepSeek R1 via OpenRouter")
+    print("🤖 MyGPT Clone with Gemini API")
     print("=" * 40)
     
     # Check Python version
